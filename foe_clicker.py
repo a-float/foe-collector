@@ -78,28 +78,32 @@ def collect_units(screen):
     print(colored(LPAD + f'-Collected {len(buildings)} units', 'green'))
 
 def collect_production(screen):
+    """
+    Returns False if no buildings were found
+    """
     buildings = locate_and_parse('images/tool.png', screen)
     if not buildings:
         print(colored(LPAD + '-No supply to collect', 'yellow'))
-        return
+        return False
     for building in buildings:
         pyautogui.moveTo(add_vecs(building, MARKER_OFFSET), duration=MOVE_DURATION, tween=TWEEN)
         pyautogui.click()
 
     print(colored(LPAD + f'-Collected supply from {len(buildings)} buildings','green'))
+    return True
 
 def find_production_target(region=None):
     """
     Returns the bottom right edge of target box
     """
     result = None
-    box = pyautogui.locateOnScreen('images/15min.png', region=region, confidence=0.9)
+    box = pyautogui.locateOnScreen('images/15min.png', region=region, confidence=0.80, grayscale=True)
     if box is not None:
         # its a normal production building
         result = box
    
     if not result:
-        box = pyautogui.locateCenterOnScreen('images/recruit.png', region=region)
+        box = pyautogui.locateCenterOnScreen('images/recruit.png', region=region, grayscale=True)
         if box is not None:
              # its an army training building
             result = box
@@ -113,10 +117,9 @@ def find_production_target(region=None):
 
 def start_production():
     """
-    Returns false if no buildings were found
+    Returns False if no buildings were found
     """
-    time.sleep(1)  # wait for the moons to appear
-    building = pyautogui.locateCenterOnScreen('images/moon2.png', confidence=0.7)
+    building = pyautogui.locateCenterOnScreen('images/moon2.png', confidence=0.65)
     if not building:
         print(colored(LPAD + '-No sleeping supply buildings', 'cyan'))
         return False
@@ -128,15 +131,14 @@ def start_production():
     # click the choice button as long as there are popups
     target = find_production_target()
     prod_start_count = 0
-    while target:
-        # raise ImageNotFound('Could not find the production choice field')
+    while target: # go through all auto sliding menus
         pyautogui.moveTo(add_vecs(target, CHOICE_OFFSET), duration=MOVE_DURATION)
         pyautogui.click()
         prod_start_count += 1
         time.sleep(PROD_SELECT_DELAY)
 
         x, y = target
-        target_region = (x - 80, y - 30, 160, 80)  # some optimization
+        target_region = (x - 400, y - 100, 500, 200)  # some optimization
         target = find_production_target(region=target_region)
     else:
         if prod_start_count > 0:
@@ -171,7 +173,8 @@ def main():
             screen = pyautogui.screenshot()
             collect_coins(screen)
             collect_units(screen)
-            collect_production(screen)
+            if collect_production(screen):
+                time.sleep(1.5)  # wait for the moons to appear
             while start_production():
                 pass
             time.sleep(delay)
