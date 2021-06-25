@@ -9,7 +9,7 @@ import random
 
 MIN_SQ_GAP = 20
 MOVE_DURATION = 0.15
-MARKER_OFFSET = (0, 85)
+MARKER_OFFSET = (0, 82)
 CHOICE_OFFSET = (15, 0)
 PROD_SELECT_DELAY = 0.8  # wait time between subsequent production selections
 LPAD = ' ' * 4
@@ -97,13 +97,13 @@ def find_production_target(region=None):
     Returns the bottom right edge of target box
     """
     result = None
-    box = pyautogui.locateOnScreen('images/15min.png', region=region, confidence=0.80, grayscale=True)
+    box = pyautogui.locateOnScreen('images/5min.png', region=region, confidence=0.8, grayscale=True)
     if box is not None:
         # its a normal production building
         result = box
    
     if not result:
-        box = pyautogui.locateCenterOnScreen('images/recruit.png', region=region, grayscale=True)
+        box = pyautogui.locateOnScreen('images/recruit.png', region=region, confidence=0.8, grayscale=True)
         if box is not None:
              # its an army training building
             result = box
