@@ -6,7 +6,6 @@ from datetime import datetime
 from termcolor import colored
 import random
 
-
 MIN_SQ_GAP = 20
 MOVE_DURATION = 0.15
 MARKER_OFFSET = (0, 82)
@@ -33,6 +32,10 @@ def add_vecs(a, b):
     return tuple(map(lambda i: a[i] + b[i], range(len(a))))
 
 def locate_and_parse(needle, haystack, confidence=0.8):
+    """
+        locates all needles in the haystack and returns a list 
+        of tuples (x, y) representing centers of every match
+    """
     res = pyautogui.locateAll(needle, haystack, confidence=confidence, grayscale=False)
     res = list(res)
 
@@ -54,8 +57,7 @@ def locate_and_parse(needle, haystack, confidence=0.8):
                 centers.append(center)
     return centers
 
-# TODO three functions beloew are similar to each other
-
+# the three functions beloew are similar to each other, but it allows for easier tuning of parameters (e.g. confidence)
 def collect_coins(screen):
     buildings = locate_and_parse('images/coin_with_star.png', screen)
     buildings.extend(locate_and_parse('images/coin.png', screen))
@@ -155,7 +157,7 @@ def main():
     try:
         assert delay is not None, 'Quitting'
         delay = int(delay)
-        assert delay > 0, 'Delay cant be negative. Aborting'
+        assert delay > 0, 'Delay can not be negative. Aborting'
     except ValueError:
         print(f'Argument {delay} can not be converted to int. Aborting')
         sys.exit()
